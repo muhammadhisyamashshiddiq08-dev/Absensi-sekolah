@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - SIA Absensi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h4><i class="fas fa-school me-2"></i>SIA Absensi</h4>
+                <small class="text-muted">Admin Panel</small>
+            </div>
+            <ul class="list-unstyled components">
+                <li><a href="#" class="active" onclick="showAdminTab('dashboard', this)"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#" onclick="showAdminTab('manajemen_siswa', this)"><i class="fas fa-users"></i> Manajemen Siswa</a></li>
+                <li><a href="#" onclick="showAdminTab('manajemen_absensi', this)"><i class="fas fa-clipboard-list"></i> Manajemen Absensi</a></li>
+                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </nav>
+
+        <div id="content">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white rounded-3 shadow-sm mb-4">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-dark">
+                        <i class="fas fa-bars"></i> <span>Menu</span>
+                    </button>
+                    <div class="ms-auto d-flex align-items-center">
+                        <button class="dark-mode-toggle" id="darkModeToggle" title="Dark Mode">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <span class="me-3 fw-bold text-dark">Admin Sekolah</span>
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=212529&color=fff" class="rounded-circle" width="40" alt="Profile">
+                    </div>
+                </div>
+            </nav>
+
+            <div id="admin-dashboard-content">
+                <h3 class="mb-4 fw-bold text-dark">Ringkasan Data</h3>
+                <div class="row mb-4">
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card card-stats bg-gradient-purple h-100">
+                            <div class="card-body">
+                                <h6 class="text-uppercase mb-2">Total Siswa</h6>
+                                <h2 class="fw-bold mb-0" id="totalSiswa">0</h2>
+                                <small>Terdaftar</small>
+                                <i class="fas fa-users icon-bg"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card card-stats bg-gradient-green h-100">
+                            <div class="card-body">
+                                <h6 class="text-uppercase mb-2">Hadir Hari Ini</h6>
+                                <h2 class="fw-bold mb-0" id="hadirHariIni">0</h2>
+                                <small>Siswa</small>
+                                <i class="fas fa-user-check icon-bg"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card card-stats bg-gradient-yellow h-100">
+                            <div class="card-body">
+                                <h6 class="text-uppercase mb-2">Izin/Sakit</h6>
+                                <h2 class="fw-bold mb-0" id="izinSakitHariIni">0</h2>
+                                <small>Siswa</small>
+                                <i class="fas fa-notes-medical icon-bg"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card card-stats bg-gradient-red h-100">
+                            <div class="card-body">
+                                <h6 class="text-uppercase mb-2">Alfa</h6>
+                                <h2 class="fw-bold mb-0" id="alfaHariIni">0</h2>
+                                <small>Siswa</small>
+                                <i class="fas fa-user-times icon-bg"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-4">Grafik Persentase Kehadiran (Bulanan)</h5>
+                        <canvas id="chartAbsensi" height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="manajemen-siswa-content" style="display:none;">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                    <h3 class="fw-bold text-dark mb-0">Manajemen Siswa</h3>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success btn-sm" onclick="exportCSV('siswa')"><i class="fas fa-file-csv me-1"></i> CSV</button>
+                        <button class="btn btn-danger btn-sm" onclick="exportPDF('siswa')"><i class="fas fa-file-pdf me-1"></i> PDF</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahSiswa"><i class="fas fa-plus me-1"></i> Tambah</button>
+                    </div>
+                </div>
+                <div class="filter-bar">
+                    <input type="text" class="form-control" id="searchSiswa" placeholder="🔍 Cari nama/NIS..." oninput="renderTabelSiswa()">
+                    <select class="form-select" id="filterKelas" onchange="renderTabelSiswa()">
+                        <option value="">Semua Kelas</option>
+                        <option value="XI RPL 1">XI RPL 1</option>
+                        <option value="XI RPL 2">XI RPL 2</option>
+                    </select>
+                    <select class="form-select" id="filterJK" onchange="renderTabelSiswa()">
+                        <option value="">Semua JK</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                    </select>
+                </div>
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr><th>NIS</th><th>Nama</th><th>Kelas</th><th>JK</th><th>Aksi</th></tr>
+                                </thead>
+                                <tbody id="tableManajemenSiswa"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-container" id="paginationSiswa"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="manajemen-absensi-content" style="display:none;">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                    <h3 class="fw-bold text-dark mb-0">Manajemen Absensi</h3>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success btn-sm" onclick="exportCSV('absensi')"><i class="fas fa-file-csv me-1"></i> CSV</button>
+                        <button class="btn btn-danger btn-sm" onclick="exportPDF('absensi')"><i class="fas fa-file-pdf me-1"></i> PDF</button>
+                    </div>
+                </div>
+                <div class="filter-bar">
+                    <input type="text" class="form-control" id="searchAbsensi" placeholder="🔍 Cari nama..." oninput="renderTabelAbsensi()">
+                    <input type="date" class="form-control" id="filterTanggal" onchange="renderTabelAbsensi()">
+                    <select class="form-select" id="filterStatus" onchange="renderTabelAbsensi()">
+                        <option value="">Semua Status</option>
+                        <option value="Hadir">Hadir</option>
+                        <option value="Izin">Izin</option>
+                        <option value="Sakit">Sakit</option>
+                        <option value="Alfa">Alfa</option>
+                    </select>
+                </div>
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Tanggal</th><th>Nama</th><th>Kelas</th><th>Masuk</th><th>Keluar</th><th>Status</th><th>Aksi</th></tr>
+                                </thead>
+                                <tbody id="tableManajemenAbsensi"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-container" id="paginationAbsensi"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Siswa -->
+    <div class="modal fade" id="modalTambahSiswa" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Tambah Siswa Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formTambahSiswa">
+                        <div class="mb-3"><label class="form-label">NIS</label><input type="text" class="form-control" id="addNis" required></div>
+                        <div class="mb-3"><label class="form-label">Nama Lengkap</label><input type="text" class="form-control" id="addNama" required></div>
+                        <div class="mb-3"><label class="form-label">Kelas</label><input type="text" class="form-control" id="addKelas" required></div>
+                        <div class="mb-3">
+                            <label class="form-label">Jenis Kelamin</label>
+                            <select class="form-select" id="addJK" required>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" id="addEmail" required></div>
+                        <div class="mb-3"><label class="form-label">Password</label><input type="text" class="form-control" id="addPassword" required></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" onclick="simpanSiswa()">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Siswa -->
+    <div class="modal fade" id="modalEditSiswa" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Edit Data Siswa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditSiswa">
+                        <input type="hidden" id="editIndex">
+                        <div class="mb-3"><label class="form-label">NIS</label><input type="text" class="form-control" id="editNis" required></div>
+                        <div class="mb-3"><label class="form-label">Nama Lengkap</label><input type="text" class="form-control" id="editNama" required></div>
+                        <div class="mb-3"><label class="form-label">Kelas</label><input type="text" class="form-control" id="editKelas" required></div>
+                        <div class="mb-3">
+                            <label class="form-label">Jenis Kelamin</label>
+                            <select class="form-select" id="editJK" required>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" id="editEmail" required></div>
+                        <div class="mb-3"><label class="form-label">Password</label><input type="text" class="form-control" id="editPassword" required></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-warning" onclick="updateSiswa()">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div class="modal fade" id="modalHapusKonfirmasi" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-exclamation-triangle me-2"></i>Konfirmasi Hapus</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="fas fa-trash-alt fa-4x text-danger mb-3"></i>
+                    <h5 class="fw-bold">Apakah Anda yakin?</h5>
+                    <p class="text-muted mb-0" id="hapusPesan">Data akan dihapus.</p>
+                    <input type="hidden" id="hapusIndex">
+                    <input type="hidden" id="hapusTipe">
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" onclick="konfirmasiHapus()">Ya, Hapus!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

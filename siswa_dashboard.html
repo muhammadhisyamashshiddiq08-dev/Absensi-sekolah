@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Siswa - SIA Absensi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h4><i class="fas fa-school me-2"></i>SIA Absensi</h4>
+                <small class="text-muted">Siswa Panel</small>
+            </div>
+            <ul class="list-unstyled components">
+                <li><a href="#" class="active" onclick="showTab('dashboard', this)"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#" onclick="showTab('kalender', this)"><i class="fas fa-calendar-alt"></i> Kalender Absensi</a></li>
+                <li><a href="#" onclick="showTab('riwayat', this)"><i class="fas fa-history"></i> Riwayat Absensi</a></li>
+                <li><a href="#" onclick="showTab('profil', this)"><i class="fas fa-user"></i> Profil</a></li>
+                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white rounded-3 shadow-sm mb-4">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                        <i class="fas fa-bars"></i> <span>Menu</span>
+                    </button>
+                    <div class="ms-auto d-flex align-items-center">
+                        <button class="dark-mode-toggle" id="darkModeToggle" title="Dark Mode">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <span class="me-3 fw-bold text-dark" id="welcomeText">Selamat datang!</span>
+                        <img src="https://ui-avatars.com/api/?name=Siswa&background=0D6EFD&color=fff" class="rounded-circle" width="40" alt="Profile">
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Konten Dashboard -->
+            <div id="dashboard-content">
+                <h3 class="mb-4 fw-bold text-dark">Dashboard Siswa</h3>
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body text-center p-5">
+                        <h5 class="text-muted mb-3">Status Absensi Hari Ini</h5>
+                        <h2 class="fw-bold mb-4" id="statusAbsenText">Anda belum melakukan absensi</h2>
+                        <button id="btnAbsen" class="btn btn-success btn-absence">
+                            <i class="fas fa-fingerprint me-2"></i> ABSEN MASUK
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card card-stats bg-gradient-blue h-100">
+                            <div class="card-body">
+                                <h6 class="text-uppercase mb-2">Total Kehadiran</h6>
+                                <h2 class="fw-bold mb-0">20</h2>
+                                <small>Bulan ini</small>
+                                <i class="fas fa-check-circle icon-bg"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card card-stats bg-gradient-yellow h-100">
+                            <div class="card-body">
+                                <h6 class="text-uppercase mb-2">Izin/Sakit</h6>
+                                <h2 class="fw-bold mb-0">2</h2>
+                                <small>Bulan ini</small>
+                                <i class="fas fa-notes-medical icon-bg"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card card-stats bg-gradient-red h-100">
+                            <div class="card-body">
+                                <h6 class="text-uppercase mb-2">Alfa</h6>
+                                <h2 class="fw-bold mb-0">1</h2>
+                                <small>Bulan ini</small>
+                                <i class="fas fa-user-times icon-bg"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card card-stats bg-gradient-green h-100">
+                            <div class="card-body">
+                                <h6 class="text-uppercase mb-2">Persentase</h6>
+                                <h2 class="fw-bold mb-0">95%</h2>
+                                <small>Total Kehadiran</small>
+                                <i class="fas fa-chart-pie icon-bg"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Konten Kalender -->
+            <div id="kalender-content" style="display:none;">
+                <h3 class="mb-4 fw-bold text-dark">Kalender Absensi</h3>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="btn btn-sm btn-outline-primary" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                        <h4 class="fw-bold mb-0" id="calendarMonthYear">Oktober 2026</h4>
+                        <button class="btn btn-sm btn-outline-primary" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                    <div class="d-flex flex-wrap gap-3 mt-4 justify-content-center">
+                        <div><span class="badge bg-success">&nbsp;</span> Hadir</div>
+                        <div><span class="badge bg-warning">&nbsp;</span> Izin</div>
+                        <div><span class="badge bg-info">&nbsp;</span> Sakit</div>
+                        <div><span class="badge bg-danger">&nbsp;</span> Alfa</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Konten Riwayat -->
+            <div id="riwayat-content" style="display:none;">
+                <h3 class="mb-4 fw-bold text-dark">Riwayat Absensi</h3>
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Tanggal</th><th>Jam Masuk</th><th>Jam Keluar</th><th>Status</th></tr>
+                                </thead>
+                                <tbody id="tableRiwayat"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Konten Profil -->
+            <div id="profil-content" style="display:none;">
+                <h3 class="mb-4 fw-bold text-dark">Profil Siswa</h3>
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-3">
+                                <img src="https://ui-avatars.com/api/?name=Siswa&background=0D6EFD&color=fff&size=150" class="rounded-circle img-fluid" alt="Profile">
+                            </div>
+                            <div class="col-md-8">
+                                <table class="table table-borderless">
+                                    <tr><th width="150">NIS</th><td id="profNis">: -</td></tr>
+                                    <tr><th>Nama</th><td id="profNama">: -</td></tr>
+                                    <tr><th>Kelas</th><td id="profKelas">: -</td></tr>
+                                    <tr><th>Jenis Kelamin</th><td id="profJK">: -</td></tr>
+                                    <tr><th>Email</th><td id="profEmail">: -</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
